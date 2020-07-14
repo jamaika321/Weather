@@ -21,7 +21,6 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
     private OnItemClickListener onItemClickListener;
     private Activity activity;
     private View parentView;
-    private mOnItemClickListener mItemClickListener;
 
     public CityWeatherAdapter(List<WeatherResponse> cities, int layoutReference, Activity activity, OnItemClickListener onItemClickListener) {
         this.cities = cities;
@@ -106,7 +105,7 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
         public void bind(final WeatherResponse cityWeather, final OnItemClickListener onItemClickListener) {
             textViewCityName.setText(cityWeather.name);
             textViewWeatherDescription.setText(cityWeather.weather.get(0).description);
-            textViewCurrentTemp.setText((int) cityWeather.main.temp + "°");
+            textViewCurrentTemp.setText((int) cityWeather.main.temp + "");
             textViewMaxTemp.setText((int) cityWeather.main.temp_max + "°");
             textViewMinTemp.setText((int) cityWeather.main.temp_min + "°");
             String weatherDescription = cityWeather.weather.get(0).description;
@@ -125,9 +124,4 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
     public interface OnItemClickListener {
         void onItemClick(WeatherResponse cityWeather, int position, View view);
     }
-
-    public void SetOnItemClickListener(final mOnItemClickListener mItemClickListener) {
-        this.mItemClickListener = mItemClickListener;
-    }
-
 }

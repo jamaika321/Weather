@@ -6,18 +6,22 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+
 import com.kamaz.weatherApp.pojo.WeatherResponse;
 
 import java.util.List;
+
+import io.reactivex.Single;
+
 
 @Dao
 public interface CitiesDao {
 
     @Query("SELECT * FROM weatherresponse")
-    List<WeatherResponse> getAll();
+    Single<List<WeatherResponse>> getAll();
 
     @Query("SELECT * FROM weatherresponse WHERE id = :id")
-    WeatherResponse getById(long id);
+    Single<WeatherResponse> getById(long id);
 
     @Insert
     void insert(WeatherResponse employee);

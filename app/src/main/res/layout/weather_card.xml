@@ -20,11 +20,12 @@
 
         <TextView
             android:id="@+id/textViewCardCityName"
+            style="@style/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
-            android:text="Kazan"
+            android:text="City"
             android:textSize="30sp"
             android:textStyle=""
             app:layout_constraintTop_toTopOf="parent"
@@ -37,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Partly Cloudy"
+            android:text="Weather"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewCardCityName" />
@@ -62,14 +63,23 @@
 
             <TextView
                 android:id="@+id/textViewCardCurrentTemp"
+                style="@style/text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="40"
                 android:gravity="center"
-                android:text="99°"
+                android:text="99"
                 android:textSize="80sp" />
+
+            <TextView
+                android:id="@+id/grad"
+                style="@style/text"
+                android:text="@string/grad"
+                android:textSize="40sp"
+                app:layout_constraintStart_toEndOf="@id/textViewCardCurrentTemp"
+                app:layout_constraintTop_toTopOf="@id/textViewCardCurrentTemp" />
 
             <LinearLayout
                 android:layout_width="0dp"

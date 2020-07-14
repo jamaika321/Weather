@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Weather</string>
+    <string name="grad" translatable="false">℃</string>
 </resources>

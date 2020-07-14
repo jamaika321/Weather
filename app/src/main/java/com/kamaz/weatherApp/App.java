@@ -19,6 +19,8 @@ public class App extends Application {
         database = Room.databaseBuilder(this, AppDatabase.class, "database")
                 .allowMainThreadQueries()
                 .build();
+
+        ApiService.init();
     }
 
     public static App getInstance() {

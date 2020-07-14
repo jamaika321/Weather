@@ -24,15 +24,17 @@ import com.kamaz.weatherApp.room.CitiesDao;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    public static String BaseUrl = "https://api.openweathermap.org/";
     public static String AppId = "2a307726d5dc127ac10aaf0246d36280";
+    public static String metric = "metric";
 
     public String cityToAdd = "";
     //private TextView weatherData;
@@ -41,8 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
     private CityWeatherAdapter adapter;
     private ArrayList<WeatherResponse> cities = new ArrayList<>();
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     CitiesDao citiesDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getCurrentData();
+//                getCurrentData();
                 getCities();
             }
         });
@@ -75,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
         getCities();
     }
 
-    public void showAlertAddCity(String title, String message){
+    public void showAlertAddCity(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if(title!=null) builder.setTitle(title);
-        if(message!=null) builder.setMessage(message);
-        final View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_city,null);
+        if (title != null) builder.setTitle(title);
+        if (message != null) builder.setMessage(message);
+        final View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_city, null);
         builder.setView(view);
         final TextView editTextAddCityName = view.findViewById(R.id.editTextAddCityName);
 
@@ -89,80 +93,56 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", (dialog, which) -> {
             cityToAdd = editTextAddCityName.getText().toString();
             getCity(cityToAdd);
-            imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS,0);
+            imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {
             dialog.cancel();
-            imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS,0);
-            Toast.makeText(MainActivity.this,"Cancel",Toast.LENGTH_LONG).show();
+            imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+            Toast.makeText(MainActivity.this, "Cancel", Toast.LENGTH_LONG).show();
         });
         builder.create().show();
     }
 
     void getCity(String cityToAdd) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BaseUrl)
-                .addConverterFactory
-                        (GsonConverterFactory.create())
-                .build();
-        WeatherService service = retrofit.create(WeatherService.class);
-        Call<WeatherResponse> call = service.getCurrentWeatherData(cityToAdd, AppId);
-        call.enqueue(new Callback<WeatherResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
-                if (response.code() == 200) {
-                    WeatherResponse weatherResponse = response.body();
-                    assert weatherResponse != null;
 
-                    WeatherResponse cityWeather = response.body();
-                    adapter.addItem(cityWeather);
-                    recyclerView.scrollToPosition(cities.size()-1);
+        disposable.add(ApiService.service.getCurrentWeatherData(cityToAdd, AppId, metric)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    adapter.addItem(response);
+                    recyclerView.scrollToPosition(cities.size());
 
-                    citiesDao.insert(cityWeather);
+                    citiesDao.insert(response);
 
-                } else {
-                    Toast.makeText(MainActivity.this,"Город не найден!",Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<WeatherResponse> call, @NonNull Throwable t) {
-                Toast.makeText(MainActivity.this,"Ошибка",Toast.LENGTH_LONG).show();
-            }
-        });
+                }, error -> {
+                    Toast.makeText(MainActivity.this, "Ошибка", Toast.LENGTH_LONG).show();
+                }));
     }
 
     void getCities() {
+        disposable.add(
+                citiesDao.getAll()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(citiesDaoAll -> {
+                                    cities.addAll(citiesDaoAll);
+                                    adapter.setItems(citiesDaoAll);
 
-        List<WeatherResponse> citiesDaoAll = citiesDao.getAll();
-        cities.addAll(citiesDaoAll);
-        adapter.setItems(citiesDaoAll);
+                                    if (citiesDaoAll.size() > 0) {
+                                        return ApiService.service.getCurrentWeathersForCities(getCityIdsFromList(citiesDaoAll), AppId)
+                                                .map(cities -> {
+                                                    adapter.setItems(cities.list);
+                                                    return cities;
+                                                });
+                                    } else return Single.just(new WeatherResponseParent());
+                                }
+                        )
+                        .subscribe(weatherResponseParent -> {
 
-        if(citiesDaoAll.size() > 0) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BaseUrl)
-                    .addConverterFactory
-                            (GsonConverterFactory.create())
-                    .build();
-            WeatherService service = retrofit.create(WeatherService.class);
-            Call<WeatherResponseParent> call = service.getCurrentWeathersForCities(getCityIdsFromList(citiesDaoAll), AppId);
-            call.enqueue(new Callback<WeatherResponseParent>() {
-                @Override
-                public void onResponse(@NonNull Call<WeatherResponseParent> call, @NonNull Response<WeatherResponseParent> response) {
-                    if (response.code() == 200) {
-                        WeatherResponseParent weatherResponse = response.body();
-                        assert weatherResponse != null;
+                        }, error -> {
 
-                        adapter.setItems(weatherResponse.list);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<WeatherResponseParent> call, @NonNull Throwable t) {
-                    Log.d("fail", t.getMessage());
-                }
-            });
-        }
+                        })
+        );
     }
 
     String getCityIdsFromList(List<WeatherResponse> list) {
@@ -200,13 +180,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy >0) {
+                if (dy > 0) {
                     // Scroll Down
                     if (fabAddCity.isShown()) {
                         fabAddCity.hide();
                     }
-                }
-                else if (dy <0) {
+                } else if (dy < 0) {
                     // Scroll Up
                     if (!fabAddCity.isShown()) {
                         fabAddCity.show();

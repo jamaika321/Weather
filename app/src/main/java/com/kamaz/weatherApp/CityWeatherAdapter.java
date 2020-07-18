@@ -1,11 +1,13 @@
 package com.kamaz.weatherApp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -83,11 +85,11 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewCityName;
-        TextView textViewWeatherDescription;
+//        TextView textViewWeatherDescription;
         TextView textViewCurrentTemp;
-        TextView textViewMaxTemp;
-        TextView textViewMinTemp;
-        ImageView imageViewWeatherIcon;
+        TextView textViewWindSpeed;
+        TextView textViewHumidity;
+//        ImageView imageViewWeatherIcon;
         CardView cardViewWeather;
 
         public ViewHolder(View itemView) {
@@ -95,21 +97,21 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
 
             cardViewWeather = itemView.findViewById(R.id.cardViewWeatherCard);
             textViewCityName = itemView.findViewById(R.id.textViewCardCityName);
-            textViewWeatherDescription = itemView.findViewById(R.id.textViewCardWeatherDescription);
+//            textViewWeatherDescription = itemView.findViewById(R.id.textViewCardWeatherDescription);
             textViewCurrentTemp = itemView.findViewById(R.id.textViewCardCurrentTemp);
-            textViewMaxTemp = itemView.findViewById(R.id.textViewCardMaxTemp);
-            textViewMinTemp = itemView.findViewById(R.id.textViewCardMinTemp);
-            imageViewWeatherIcon = itemView.findViewById(R.id.imageViewCardWeatherIcon);
+            textViewWindSpeed = itemView.findViewById(R.id.TextViewWindSpeed);
+            textViewHumidity = itemView.findViewById(R.id.textViewHumidity);
+//            imageViewWeatherIcon = itemView.findViewById(R.id.imageViewCardWeatherIcon);
         }
 
         public void bind(final WeatherResponse cityWeather, final OnItemClickListener onItemClickListener) {
             textViewCityName.setText(cityWeather.name);
-            textViewWeatherDescription.setText(cityWeather.weather.get(0).description);
-            textViewCurrentTemp.setText((int) cityWeather.main.temp + "");
-            textViewMaxTemp.setText((int) cityWeather.main.temp_max + "°");
-            textViewMinTemp.setText((int) cityWeather.main.temp_min + "°");
+//            textViewWeatherDescription.setText(cityWeather.weather.get(0).description);
+            textViewCurrentTemp.setText((int)  cityWeather.main.temp + "");
+            textViewWindSpeed.setText("Скорость ветра: " + (int) cityWeather.wind.speed + "м/с");
+            textViewHumidity.setText("Влажность: " + (int) cityWeather.main.humidity + "%");
             String weatherDescription = cityWeather.weather.get(0).description;
-            Picasso.get().load(cityWeather.weather.get(0).icon).into(imageViewWeatherIcon);
+//            Picasso.get().load(cityWeather.weather.get(0).icon).into(imageViewWeatherIcon);
 
             cardViewWeather.setOnClickListener(new View.OnClickListener() {
                 @Override

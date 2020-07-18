@@ -2,15 +2,17 @@ package com.kamaz.weatherApp;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,9 +30,6 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     public static String AppId = "2a307726d5dc127ac10aaf0246d36280";
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     public String cityToAdd = "";
     //private TextView weatherData;
     private RecyclerView recyclerView;
-    private FloatingActionButton fabAddCity;
 
     private CityWeatherAdapter adapter;
     private ArrayList<WeatherResponse> cities = new ArrayList<>();
@@ -56,27 +54,12 @@ public class MainActivity extends AppCompatActivity {
 
         citiesDao = App.getInstance().getDatabase().citiesDao();
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                getCurrentData();
-                getCities();
-            }
-        });
-
-        fabAddCity = findViewById(R.id.fabAddCity);
         recyclerView = findViewById(R.id.recyclerView);
 
         initRecyclerView();
 
-        fabAddCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAlertAddCity("Добавить город", "Введите название города");
-            }
-        });
-
         getCities();
+
     }
 
     public void showAlertAddCity(String title, String message) {
@@ -177,27 +160,26 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0) {
-                    // Scroll Down
-                    if (fabAddCity.isShown()) {
-                        fabAddCity.hide();
-                    }
-                } else if (dy < 0) {
-                    // Scroll Up
-                    if (!fabAddCity.isShown()) {
-                        fabAddCity.show();
-                    }
-                }
-            }
-        });
-
-
-        fabAddCity.setOnClickListener(view -> {
-
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.param_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_search:
+                showAlertAddCity("Добавить город", "Введите название города");
+                return true;
+            case R.id.action_update:
+                getCities();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

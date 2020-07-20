@@ -13,12 +13,14 @@
     android:alpha="0.9"
     android:foreground="?attr/selectableItemBackground"
     android:transitionName="weatherCardTransition"
-    app:cardElevation="2dp"
-    card_view:cardCornerRadius="4dp">
+    app:cardCornerRadius="15dp"
+    card_view:cardElevation="5dp"
+    card_view:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/round_corners">
 
         <TextView
             android:id="@+id/textViewCardCityName"

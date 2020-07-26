@@ -43,14 +43,6 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
     @Override
     public void onBindViewHolder(CityWeatherAdapter.ViewHolder holder, int position) {
         holder.bind(cities.get(position), onItemClickListener);
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(mItemClickListener != null) {
-//                    mItemClickListener.onClick(position);
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -97,7 +89,6 @@ public class CityWeatherAdapter extends RecyclerView.Adapter<CityWeatherAdapter.
 
             cardViewWeather = itemView.findViewById(R.id.cardViewWeatherCard);
             textViewCityName = itemView.findViewById(R.id.textViewCardCityName);
-//            textViewWeatherDescription = itemView.findViewById(R.id.textViewCardWeatherDescription);
             textViewCurrentTemp = itemView.findViewById(R.id.textViewCardCurrentTemp);
             textViewWindSpeed = itemView.findViewById(R.id.TextViewWindSpeed);
             textViewHumidity = itemView.findViewById(R.id.textViewHumidity);

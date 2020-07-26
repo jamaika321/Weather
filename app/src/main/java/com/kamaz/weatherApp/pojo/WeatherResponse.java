@@ -7,6 +7,7 @@ import androidx.room.TypeConverters;
 import com.google.gson.annotations.SerializedName;
 import com.kamaz.weatherApp.room.Converters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

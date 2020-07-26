@@ -1,5 +1,6 @@
 package com.kamaz.weatherApp;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -142,13 +143,13 @@ public class MainActivity extends AppCompatActivity {
         adapter = new CityWeatherAdapter(cities, R.layout.weather_card, this, new CityWeatherAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(WeatherResponse cityWeather, int position, View clickView) {
-                /*Intent intent = new Intent(MainActivity.this, WeatherDetails.class);
+                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                         MainActivity.this,clickView,
                         "weatherCardTransition");
 
-                intent.putExtra("city",  cityWeather);
-                startActivity(intent,options.toBundle());*/
+                intent.putExtra("CityId", cityWeather.id);
+                startActivity(intent,options.toBundle());
             }
         });
         recyclerView.setHasFixedSize(true);
